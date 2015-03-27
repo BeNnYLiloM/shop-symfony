@@ -3,33 +3,44 @@
  * Created by PhpStorm.
  * User: roman
  * Date: 27.03.15
- * Time: 14:06
+ * Time: 18:02
  */
 
 namespace Shop\AppBundle\Entity;
 
 class Task
 {
-    protected $task;
-    protected $dueDate;
+    protected $name;
+    protected $price;
+    protected $amount;
 
-    public function getTask()
+    public function getName()
     {
-        return $this->task;
+        return $this->name;
     }
 
-    public function setTask($task)
+    public function setName($name)
     {
-        $this->task = $task;
+        $this->name = $name;
     }
 
-    public function getDueDate()
+    public function getPrice()
     {
-        return $this->dueDate;
+        return $this->price;
     }
 
-    public function setDueDate(\DateTime $dueDate = null)
+    public function setPrice($price)
     {
-        $this->dueDate = $dueDate;
+        $this->price = $price;
+    }
+
+    public function getAmount()
+    {
+        return $this->amount;
+    }
+
+    public function setAmount($amount)
+    {
+        $this->amount = $amount;
     }
 }

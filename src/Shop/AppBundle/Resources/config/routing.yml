@@ -2,6 +2,6 @@ shop_app_homepage:
     path:     /
     defaults: { _controller: ShopAppBundle:Index:index }
 
-shop_app_blog:
-    path:     /blog
-    defaults: { _controller: ShopAppBundle:Index:new }
+_add_product:
+    defaults: { _controller: ShopAppBundle:Index:addProduct }
+    path:     /add-product

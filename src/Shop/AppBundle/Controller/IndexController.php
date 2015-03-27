@@ -3,9 +3,11 @@
 namespace Shop\AppBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Shop\AppBundle\Entity\Product;
 use Shop\AppBundle\Entity\Task;
+use Shop\AppBundle\Entity\Product;
 use Symfony\Component\HttpFoundation\Request;
+
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 
 class IndexController extends Controller
 {
@@ -20,19 +22,39 @@ class IndexController extends Controller
         ));
     }
 
-    public function newAction(Request $request)
+    public function addProductAction(Request $request)
     {
         $task = new Task();
-        $task->setTask('Write a blog post');
-        $task->setDueDate(new \DateTime('tomorrow'));
 
         $form = $this->createFormBuilder($task)
-            ->add('task', 'text')
-            ->add('dueDate', 'date')
-            ->add('save', 'submit', array('label' => 'Create Task'))
+            ->add('Name', 'text')
+            ->add('Price', 'text')
+            ->add('Amount', 'text')
+            ->add('save', 'submit', array('label' => 'Add product'))
             ->getForm();
 
-        return $this->render('ShopAppBundle:Default:new.html.twig', array(
+        $form->handleRequest($request);
+
+        if($form->isValid()){
+            $em = $this->getDoctrine()->getManager();
+
+            $name = $form->getData()->getName();
+            $price = $form->getData()->getPrice();
+            $amount = $form->getData()->getAmount();
+
+            $product = new Product();
+            $product->setName($name);
+            $product->setPrice((float)$price);
+            $product->setAmount((int)$amount);
+
+            $em->persist($product);
+            $em->flush();
+
+            $name = 'Product';
+            return $this->render('ShopAppBundle:Default:response.html.twig', array('name' => $name));
+        }
+
+        return $this->render('ShopAppBundle:Default:addProduct.html.twig', array(
             'form' => $form->createView(),
         ));
     }
