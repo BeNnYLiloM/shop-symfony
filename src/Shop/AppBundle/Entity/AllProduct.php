@@ -10,5 +10,5 @@ namespace Shop\AppBundle\Entity;
 
 class AllProduct
 {
-
+    
 }
