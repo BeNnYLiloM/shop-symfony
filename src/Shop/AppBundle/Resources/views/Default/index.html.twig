@@ -1,1 +1,14 @@
-Hello {{ name }}!
+<table border="1">
+    <tr>
+        <th>Name:</th>
+        <th>Price:</th>
+        <th>Amount:</th>
+    </tr>
+    {% for product in products %}
+        <tr>
+            <td>{{ product.name }}</td>
+            <td>{{ product.price }}</td>
+            <td>{{ product.amount }}</td>
+        </tr>
+    {% endfor %}
+</table>

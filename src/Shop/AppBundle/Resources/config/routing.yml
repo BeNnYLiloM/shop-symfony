@@ -1,3 +1,7 @@
 shop_app_homepage:
-    path:     /hello/{name}
-    defaults: { _controller: ShopAppBundle:Default:index }
+    path:     /
+    defaults: { _controller: ShopAppBundle:Index:index }
+
+shop_app_blog:
+    path:     /blog
+    defaults: { _controller: ShopAppBundle:Index:new }
