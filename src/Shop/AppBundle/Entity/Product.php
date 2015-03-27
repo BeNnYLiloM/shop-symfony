@@ -8,7 +8,7 @@
 
 namespace Shop\AppBundle\Entity;
 
-class AllProduct
+class Product
 {
-    
+
 }
