@@ -5,3 +5,7 @@ shop_app_homepage:
 _add_product:
     defaults: { _controller: ShopAppBundle:Index:addProduct }
     path:     /add-product
+
+_order_product:
+    defaults: { _controller: ShopAppBundle:Index:orderProduct }
+    path:     /order-product
