@@ -9,3 +9,11 @@ _add_product:
 _order_product:
     defaults: { _controller: ShopAppBundle:Index:orderProduct }
     path:     /order-product
+
+_show_order:
+    defaults: { _controller: ShopAppBundle:Index:show }
+    path:    /show-order
+
+_edit_product:
+    defaults: { _controller: ShopAppBundle:Index:show }
+    path:    /edit-product

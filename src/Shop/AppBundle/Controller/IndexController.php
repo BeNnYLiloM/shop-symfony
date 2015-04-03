@@ -7,8 +7,11 @@ use Shop\AppBundle\Entity\Product;
 use Shop\AppBundle\Entity\Order;
 use Shop\AppBundle\Entity\OrderTask;
 use Shop\AppBundle\Entity\OrderProduct;
+use Shop\AppBundle\Entity\ShowTask;
 use Shop\AppBundle\Form\Type\ProductType;
 use Shop\AppBundle\Form\Type\OrderType;
+use Shop\AppBundle\Form\Type\ShowType;
+use Shop\AppBundle\Form\Type\EditType;
 
 use Symfony\Component\HttpFoundation\Request;
 
@@ -121,5 +124,89 @@ class IndexController extends Controller
             'products' => $products,
             'form' => $form->createView(),
         ));
+    }
+
+    public function showAction(Request $request)
+    {
+        if($_SERVER['REQUEST_URI'] == '/show-order'){
+            $form = $this->createForm(new ShowType(), new ShowTask());
+
+            $form->handleRequest($request);
+
+            if($form->isValid()){
+                $data = $form->getData();
+
+                $em = $this->getDoctrine()->getManager();
+
+                $order = $em->find('Shop\AppBundle\Entity\Order', $data->getId());
+                if(!$order){
+                    return $this->render('ShopAppBundle:Default:error.html.twig', array(
+                        'name' => 'Order',
+                        'id' => $data->getOrderId(),
+                    ));
+                } else {
+                    return $this->render('ShopAppBundle:Default:show.html.twig', array(
+                        'id' => $order->getId(),
+                        'total' => $order->getTotal(),
+                        'created' => date('Y-m-d h:m',$order->getCreated()->getTimestamp()),
+                    ));
+                }
+            }
+
+            return $this->render('ShopAppBundle:Default:poleId.html.twig', array(
+                'form' => $form->createView(),
+            ));
+        } elseif($_SERVER['REQUEST_URI'] == '/edit-product') {
+            $form = $this->createForm(new ShowType(), new ShowTask());
+
+            $form->handleRequest($request);
+
+            if($form->isValid()){
+                $data = $form->getData();
+
+                $em = $this->getDoctrine()->getManager();
+
+                $product = $em->find('Shop\AppBundle\Entity\Product', $data->getId());
+                if(!$product){
+                    return $this->render('ShopAppBundle:Default:error.html.twig', array(
+                        'name' => 'Product',
+                        'id' => $data->getOrderId(),
+                    ));
+                } else {
+                    $editProduct = new Product();
+                    $editForm = $this->createFormBuilder($editProduct)
+                        ->add('name', null)
+                        ->add('price', null)
+                        ->add('amount', null)
+                        ->add('save', 'submit', array('label' => 'Edit'))
+                        ->getForm();
+
+                    $editForm->handleRequest($request);
+
+                    if($editForm->isValid()){
+                        $newData = $editForm->getData();
+
+                        if($newData->getName()){
+                            $product->setName($newData->getName());
+                        } elseif($newData->getPrice()){
+                            $product->setPrice($newData->getPrice());
+                        } elseif($newData->getAmount()){
+                            $product->setAmount($newData->getAmount());
+                        }
+
+                        $em->persist($product);
+                        $em->flush();
+                    }
+
+                    return $this->render('ShopAppBundle:Default:addProduct.html.twig', array(
+                        'form' => $editForm->createView(),
+                    ));
+                }
+            }
+
+            return $this->render('ShopAppBundle:Default:poleId.html.twig', array(
+                'form' => $form->createView(),
+            ));
+        }
     }
 }
