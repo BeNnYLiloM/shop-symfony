@@ -58,7 +58,10 @@ class IndexController extends Controller
 
     public function orderProductAction(Request $request)
     {
-        $form = $this->createForm(new OrderType(), new OrderTask());
+//        $form = $this->createForm(new OrderType(), new OrderTask());
+        $form = $this->createForm(new OrderType(), new OrderProduct(), array(
+            'em' => $this->getDoctrine()->getManager(),
+        ));
 
         $em = $this->getDoctrine()->getManager();
         $productRepository = $em->getRepository('Shop\AppBundle\Entity\Product');
@@ -69,39 +72,10 @@ class IndexController extends Controller
         if($form->isValid()){
             $orderData = $form->getData();
 
-            if($orderData->getOrderId()){
-                $order = $em->find('Shop\AppBundle\Entity\Order', $orderData->getOrderId());
-                if($order){
-                    $product = $em->find('Shop\AppBundle\Entity\Product', $orderData->getProductId());
-                    if(!$product) {
-                        return $this->render('ShopAppBundle:Default:error.html.twig', array(
-                            'name' => 'Product',
-                            'id' => $orderData->getProductId(),
-                        ));
-                    }
-
-                    $cart = new OrderProduct();
-                    $cart->setOrder($order)
-                        ->setProduct($product)
-                        ->setCount($orderData->getCount());
-
-                    $em->persist($cart);
-                    $em->flush();
-                } else {
-                    return $this->render('ShopAppBundle:Default:error.html.twig', array(
-                        'name' => 'Order',
-                        'id' => $orderData->getOrderId(),
-                    ));
-                }
+            if($orderData->getOrder()){
+                $em->persist($orderData);
+                $em->flush();
             } else {
-                $product = $em->find('Shop\AppBundle\Entity\Product', $orderData->getProductId());
-                if(!$product) {
-                    return $this->render('ShopAppBundle:Default:error.html.twig', array(
-                        'name' => 'Product',
-                        'id' => $orderData->getProductId(),
-                    ));
-                }
-
                 $newOrder = new Order();
                 $newOrder->setCreated(new \DateTime('now'));
 
@@ -110,7 +84,7 @@ class IndexController extends Controller
 
                 $cart = new OrderProduct();
                 $cart->setOrder($newOrder)
-                    ->setProduct($product)
+                    ->setProduct($orderData->getProduct())
                     ->setCount($orderData->getCount());
 
                 $em->persist($cart);
