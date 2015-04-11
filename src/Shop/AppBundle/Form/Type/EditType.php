@@ -16,9 +16,12 @@ class EditType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $option)
     {
         $builder
-            ->add('name', null)
-            ->add('price', null)
-            ->add('amount', null)
+            ->add('order', 'text')
+            ->add('product', 'collection', array(
+                'type' => new EditProductType(),
+                'allow_add' => true
+            ))
+            ->add('count', null)
             ->add('save', 'submit', array('label' => 'Edit'));
     }
 

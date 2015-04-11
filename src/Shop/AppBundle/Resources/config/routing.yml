@@ -12,8 +12,12 @@ _order_product:
 
 _show_order:
     defaults: { _controller: ShopAppBundle:Index:show }
-    path:    /show-order
+    path:     /show-order
 
 _edit_product:
-    defaults: { _controller: ShopAppBundle:Index:show }
-    path:    /edit-product
+    defaults: { _controller: ShopAppBundle:Index:edit }
+    path:     /edit-product
+
+_edit_order:
+    defaults: { _controller: ShopAppBundle:Index:edit }
+    path:     /edit-order

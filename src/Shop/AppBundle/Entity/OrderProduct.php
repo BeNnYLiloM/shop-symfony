@@ -9,6 +9,7 @@
 namespace Shop\AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @ORM\Entity
@@ -38,6 +39,11 @@ class OrderProduct
      * @ORM\Column(type="integer")
      */
     protected $count;
+
+    public function __construct()
+    {
+        $this->product = new ArrayCollection();
+    }
 
     /**
      * Get id

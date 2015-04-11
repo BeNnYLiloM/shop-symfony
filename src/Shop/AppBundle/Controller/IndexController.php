@@ -5,11 +5,10 @@ namespace Shop\AppBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Shop\AppBundle\Entity\Product;
 use Shop\AppBundle\Entity\Order;
-use Shop\AppBundle\Entity\OrderTask;
 use Shop\AppBundle\Entity\OrderProduct;
 use Shop\AppBundle\Entity\ShowTask;
 use Shop\AppBundle\Form\Type\ProductType;
-use Shop\AppBundle\Form\Type\OrderType;
+use Shop\AppBundle\Form\Type\OrderProductType;
 use Shop\AppBundle\Form\Type\ShowType;
 use Shop\AppBundle\Form\Type\EditType;
 
@@ -58,8 +57,7 @@ class IndexController extends Controller
 
     public function orderProductAction(Request $request)
     {
-//        $form = $this->createForm(new OrderType(), new OrderTask());
-        $form = $this->createForm(new OrderType(), new OrderProduct(), array(
+        $form = $this->createForm(new OrderProductType(), new OrderProduct(), array(
             'em' => $this->getDoctrine()->getManager(),
         ));
 
@@ -112,7 +110,7 @@ class IndexController extends Controller
 
                 $em = $this->getDoctrine()->getManager();
 
-                $order = $em->find('Shop\AppBundle\Entity\Order', $data->getId());
+                $order = $em->find('ShopAppBundle:Order', $data->getId());
                 if(!$order){
                     return $this->render('ShopAppBundle:Default:error.html.twig', array(
                         'name' => 'Order',
@@ -130,8 +128,15 @@ class IndexController extends Controller
             return $this->render('ShopAppBundle:Default:poleId.html.twig', array(
                 'form' => $form->createView(),
             ));
+        }
+    }
+
+    public function editAction(Request $request)
+    {
+        if($_SERVER['REQUEST_URI'] == '/edit-order'){
+            $form = $this->createForm(new EditType(), new OrderProduct());
         } elseif($_SERVER['REQUEST_URI'] == '/edit-product') {
-            $form = $this->createForm(new ShowType(), new ShowTask());
+            $form = $this->createForm(new EditType(), new OrderProduct());
 
             $form->handleRequest($request);
 
@@ -140,45 +145,30 @@ class IndexController extends Controller
 
                 $em = $this->getDoctrine()->getManager();
 
-                $product = $em->find('Shop\AppBundle\Entity\Product', $data->getId());
-                if(!$product){
-                    return $this->render('ShopAppBundle:Default:error.html.twig', array(
-                        'name' => 'Product',
-                        'id' => $data->getOrderId(),
-                    ));
-                } else {
-                    $editProduct = new Product();
-                    $editForm = $this->createFormBuilder($editProduct)
-                        ->add('name', null)
-                        ->add('price', null)
-                        ->add('amount', null)
-                        ->add('save', 'submit', array('label' => 'Edit'))
-                        ->getForm();
+                $product = $data->getProduct();
 
-                    $editForm->handleRequest($request);
+                for($i = 0; $i <= (count($product) - 1); $i++){
+                    $productArray = $product->get($i);
+                    $editProduct = $em->find('ShopAppBundle:Product', $productArray['id']);
 
-                    if($editForm->isValid()){
-                        $newData = $editForm->getData();
-
-                        if($newData->getName()){
-                            $product->setName($newData->getName());
-                        } elseif($newData->getPrice()){
-                            $product->setPrice($newData->getPrice());
-                        } elseif($newData->getAmount()){
-                            $product->setAmount($newData->getAmount());
-                        }
-
-                        $em->persist($product);
-                        $em->flush();
+                    if(!$productArray['name'] == null){
+                        $editProduct->setName($productArray['name']);
+                    }
+                    if(!$productArray['price'] == null){
+                        $editProduct->setPrice($productArray['price']);
+                    }
+                    if(!$productArray['amount'] == null){
+                        $editProduct->setAmount($productArray['amount']);
                     }
 
-                    return $this->render('ShopAppBundle:Default:addProduct.html.twig', array(
-                        'form' => $editForm->createView(),
-                    ));
+                    $em->persist($editProduct);
+                    $em->flush();
                 }
+
+                return $this->render('ShopAppBundle:Default:edit.html.twig');
             }
 
-            return $this->render('ShopAppBundle:Default:poleId.html.twig', array(
+            return $this->render('ShopAppBundle:Default:editProduct.html.twig', array(
                 'form' => $form->createView(),
             ));
         }
